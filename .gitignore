@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.env
+
+# Models (too large)
+models/
+ComfyUI/models/
+
+# Images / outputs
+storage/images/
+ComfyUI/output/
+
+# Logs
+logs/
+
+# Mac files
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Memory database
+memory/chromadb/
+
+# Temporary
+*.log
+*.tmp
