@@ -1,15 +1,35 @@
 from fastapi import APIRouter, UploadFile, File
-import shutil
+from pydantic import BaseModel
+
+from backend.agents.image_agent import ImageAgent
 
 router = APIRouter()
 
+image_agent = ImageAgent()
 
+
+class ImageRequest(BaseModel):
+    prompt: str
+
+
+# generate image
+@router.post("/generate")
+def generate_image(request: ImageRequest):
+
+    result = image_agent.generate(request.prompt)
+
+    return result
+
+
+# upload image
 @router.post("/upload-image")
-def upload_image(file: UploadFile = File(...)):
+async def upload_image(file: UploadFile = File(...)):
 
-    save_path = f"storage/images/{file.filename}"
+    contents = await file.read()
 
-    with open(save_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    path = f"storage/images/{file.filename}"
 
-    return {"message": "Image uploaded", "filename": file.filename}
+    with open(path, "wb") as f:
+        f.write(contents)
+
+    return {"image_path": path}

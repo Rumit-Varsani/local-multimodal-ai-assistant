@@ -6,7 +6,7 @@ router = APIRouter()
 vision_agent = VisionAgent()
 
 
-@router.post("/")
+@router.post("/analyze")
 async def analyze_image(
     prompt: str = Form(...),
     image: UploadFile = File(...)
