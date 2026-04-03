@@ -1,10 +1,15 @@
 # ui/chat.py
 
+import os
+
 import requests
 import streamlit as st
+from dotenv import load_dotenv
 
-API_URL = "http://127.0.0.1:8000/assistant"
-REQUEST_TIMEOUT_SECONDS = 60
+load_dotenv()
+
+API_URL = os.getenv("ASSISTANT_API_URL", "http://127.0.0.1:8000/assistant")
+REQUEST_TIMEOUT_SECONDS = int(os.getenv("ASSISTANT_REQUEST_TIMEOUT_SECONDS", "60"))
 
 
 st.set_page_config(page_title="AI Assistant", layout="wide")
