@@ -1,22 +1,18 @@
-# Local Multimodal AI Assistant
+# Local Text AI Assistant
 
-A local AI system similar to ChatGPT + Grok Imagine.
+A local text-based AI assistant with memory and a foundation for future self-improvement loops.
 
 ## Features
 
 - Local LLM chat (Ollama)
-- Vision analysis (LLaVA)
-- Image generation (Stable Diffusion / ComfyUI)
 - Memory system (ChromaDB)
 - FastAPI backend
-- Multi-agent architecture
+- Interaction logging for later reflection and evaluation
 
 ## Architecture
 
-User → FastAPI → Agents → Models
+User -> FastAPI -> Agent -> Memory + Ollama
 
 ## Models
 
 - Phi3
-- LLaVA
-- Stable Diffusion 1.5

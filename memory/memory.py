@@ -1,9 +1,14 @@
+import hashlib
+import time
+from pathlib import Path
+
 import chromadb
 from sentence_transformers import SentenceTransformer
-import time
 
 # Initialize Chroma client
-client = chromadb.Client()
+STORAGE_PATH = Path("storage/chroma")
+STORAGE_PATH.mkdir(parents=True, exist_ok=True)
+client = chromadb.PersistentClient(path=str(STORAGE_PATH))
 
 # Get or create collection (IMPORTANT: avoids crash on restart)
 collection = client.get_or_create_collection(name="ai_memory")
@@ -18,11 +23,12 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 def store_memory(text: str):
     try:
         embedding = model.encode(text).tolist()
+        memory_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
 
-        collection.add(
+        collection.upsert(
             documents=[text],
             embeddings=[embedding],
-            ids=[str(hash(text))],
+            ids=[memory_id],
             metadatas=[{"timestamp": time.time()}]
         )
 
@@ -53,4 +59,17 @@ def search_memory(query: str, n_results: int = 3):
 
     except Exception as e:
         print(f"❌ Memory search error: {e}")
+        return []
+
+
+def get_all_memories(limit: int = 100):
+    try:
+        results = collection.get(limit=limit, include=["documents"])
+        documents = results.get("documents", [])
+
+        print(f"📦 Loaded all memories: {documents}")
+
+        return documents
+    except Exception as e:
+        print(f"❌ Load all memories error: {e}")
         return []

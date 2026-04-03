@@ -13,6 +13,10 @@ ComfyUI/models/
 
 # Images / outputs
 storage/images/
+storage/chroma/
+storage/brain_state.json
+storage/interactions.jsonl
+storage/lessons.jsonl
 ComfyUI/output/
 
 # Logs
