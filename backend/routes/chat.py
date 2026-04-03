@@ -1,20 +1,19 @@
+# backend/routes/chat.py
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-
-from backend.agents.chat_agent import ChatAgent
+from backend.agents.router_agent import RouterAgent
 
 router = APIRouter()
-
-chat_agent = ChatAgent()
+router_agent = RouterAgent()
 
 
 class ChatRequest(BaseModel):
-    message: str
+    prompt: str
 
 
 @router.post("/")
-def chat(request: ChatRequest):
-
-    response = chat_agent.run(request.message)
-
-    return {"response": response}
+def chat(req: ChatRequest):
+    return {
+        "response": router_agent.route(message=req.prompt)
+    }

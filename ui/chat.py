@@ -1,50 +1,76 @@
+# ui/chat.py
+
 import streamlit as st
 import requests
+import base64
 
-API_URL = "http://127.0.0.1:8000/chat"
+API_URL = "http://127.0.0.1:8000/assistant"
 
-st.title("🧠 Rumit's Local AI Assistant")
 
+st.set_page_config(page_title="AI Assistant", layout="wide")
+
+st.title("🤖 Local AI Assistant")
+
+# -----------------------------
+# SESSION STATE
+# -----------------------------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# display previous messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# -----------------------------
+# CHAT DISPLAY
+# -----------------------------
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-st.subheader("Upload Image")
+# -----------------------------
+# INPUT AREA
+# -----------------------------
+user_input = st.chat_input("Type your message...")
 
-uploaded_file = st.file_uploader("Choose an image", type=["png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader("Upload an image (optional)", type=["png", "jpg", "jpeg"])
 
-if uploaded_file:
+# -----------------------------
+# HANDLE INPUT
+# -----------------------------
+if user_input or uploaded_file:
 
-    files = {"file": uploaded_file.getvalue()}
+    # Show user message
+    if user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
 
-    response = requests.post(
-        "http://127.0.0.1:8000/upload-image",
-        files={"file": uploaded_file}
-    )
+        with st.chat_message("user"):
+            st.markdown(user_input)
 
-    st.success("Image uploaded successfully!")
+    # Convert image to base64 if exists
+    image_base64 = None
+    if uploaded_file:
+        image_bytes = uploaded_file.read()
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
-    st.image(uploaded_file)
+        with st.chat_message("user"):
+            st.image(uploaded_file, caption="Uploaded Image")
 
-# user input
-prompt = st.chat_input("Ask something...")
+    # -----------------------------
+    # API CALL
+    # -----------------------------
+    payload = {
+        "message": user_input,
+        "image": image_base64
+    }
 
-if prompt:
+    try:
+        response = requests.post(API_URL, json=payload)
+        result = response.json().get("response", "No response")
 
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    except Exception as e:
+        result = f"Error: {e}"
 
-    with st.chat_message("user"):
-        st.write(prompt)
-
-    response = requests.post(API_URL, params={"prompt": prompt})
-
-    ai_reply = response.json()["response"]
-
-    st.session_state.messages.append({"role": "assistant", "content": ai_reply})
-
+    # -----------------------------
+    # SHOW RESPONSE
+    # -----------------------------
     with st.chat_message("assistant"):
-        st.write(ai_reply)
+        st.markdown(result)
+
+    st.session_state.messages.append({"role": "assistant", "content": result})
