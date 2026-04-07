@@ -27,6 +27,7 @@ AUTONOMY_CHECKPOINTS_URL = f"{BACKEND_BASE_URL}/autonomy/checkpoints"
 AUTONOMY_RUN_ONCE_URL = f"{BACKEND_BASE_URL}/autonomy/run-once"
 TRAINING_TOPICS_URL = f"{BACKEND_BASE_URL}/training/topics"
 MODELS_STATUS_URL = f"{BACKEND_BASE_URL}/models/status"
+SYSTEM_PHASES_URL = f"{BACKEND_BASE_URL}/system/phases"
 
 
 def _fetch_json(url: str):
@@ -260,6 +261,29 @@ def _render_model_panel():
             )
 
 
+def _render_phase_panel():
+    payload, error = _fetch_json(SYSTEM_PHASES_URL)
+
+    st.subheader("Project Phase")
+    if error:
+        st.error(error)
+        return
+
+    current = payload.get("current_phase") or {}
+    st.info(
+        f"Current phase: `{current.get('name', 'unknown')}` | "
+        f"status=`{current.get('status', 'unknown')}` | "
+        f"completed phases=`{payload.get('completed_count', 0)}/{payload.get('total_count', 0)}`"
+    )
+    if current.get("goal"):
+        st.caption(current["goal"])
+
+    for phase in payload.get("phases", []):
+        st.markdown(
+            f"- Phase {phase.get('id')}: **{phase.get('name')}** | status=`{phase.get('status')}`"
+        )
+
+
 st.set_page_config(page_title="ForgeMind", layout="wide")
 
 st.title("ForgeMind")
@@ -315,6 +339,8 @@ st.divider()
 _render_training_panel()
 st.divider()
 _render_model_panel()
+st.divider()
+_render_phase_panel()
 
 st.divider()
 st.subheader("Chat")

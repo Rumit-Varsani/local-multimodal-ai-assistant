@@ -1,5 +1,9 @@
 # Phase 1 Progress
 
+This file tracks the autonomy-foundation layer specifically.
+
+For the full project phase breakdown and current overall phase, see [master-phase-plan.md](/Users/rumitvarsani/ai-project/docs/master-phase-plan.md).
+
 ## Goal of Phase 1
 
 Build the first autonomous improvement loop for ForgeMind.

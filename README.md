@@ -26,6 +26,7 @@ See [remote-dev-setup.md](/Users/rumitvarsani/ai-project/docs/remote-dev-setup.m
 ## Notes
 
 - The long-term autonomous training roadmap lives in [autonomous-training-roadmap.md](/Users/rumitvarsani/ai-project/docs/autonomous-training-roadmap.md).
+- The full project phase breakdown lives in [master-phase-plan.md](/Users/rumitvarsani/ai-project/docs/master-phase-plan.md).
 - Current implementation progress lives in [phase1-progress.md](/Users/rumitvarsani/ai-project/docs/phase1-progress.md).
 - The automated Mac-to-GitHub and Dell runtime workflow lives in [automated-workflow.md](/Users/rumitvarsani/ai-project/docs/automated-workflow.md).
 - The simplest human-readable version lives in [simple-mac-dell-workflow.md](/Users/rumitvarsani/ai-project/docs/simple-mac-dell-workflow.md).

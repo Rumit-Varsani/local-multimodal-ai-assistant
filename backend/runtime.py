@@ -7,6 +7,7 @@ from backend.services.interaction_log_service import InteractionLogService
 from backend.services.model_manager_service import ModelManagerService
 from backend.services.model_registry_service import ModelRegistryService
 from backend.services.multi_model_ollama_service import MultiModelOllamaService
+from backend.services.project_phase_service import ProjectPhaseService
 from backend.services.router_service import RouterService
 from backend.services.resource_monitor_service import ResourceMonitorService
 from backend.services.sqlite_memory_service import SQLiteMemoryService
@@ -22,6 +23,7 @@ model_manager = ModelManagerService(multi_model_service=multi_model_service)
 router_service = RouterService()
 sqlite_memory = SQLiteMemoryService()
 resource_monitor = ResourceMonitorService()
+project_phase_service = ProjectPhaseService()
 teacher_service = TeacherService()
 critic_service = CriticService()
 dataset_builder = DatasetBuilderService(
