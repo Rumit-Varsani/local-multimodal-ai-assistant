@@ -95,6 +95,7 @@ That worktree is a detached checkout of `origin/main`, useful for:
 
 1. run `./scripts/dell_sync_main.sh`
 2. run `./scripts/run_server_dell.sh`
+3. if you want to open the UI from your Mac browser using the Dell IP, run `./scripts/run_ui_dell.sh`
 
 If Dell runs Windows, use the PowerShell versions documented in [windows-dell-runtime.md](/Users/rumitvarsani/ai-project/docs/windows-dell-runtime.md).
 
