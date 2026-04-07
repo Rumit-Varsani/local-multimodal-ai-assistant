@@ -16,7 +16,7 @@ class LLMService:
     def __init__(self):
         self.url = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/api/generate")
         self.model = os.getenv("OLLAMA_MODEL", "phi3:mini")
-        self.timeout_seconds = int(os.getenv("OLLAMA_TIMEOUT_SECONDS", "60"))
+        self.timeout_seconds = int(os.getenv("OLLAMA_TIMEOUT_SECONDS", "180"))
         self.tags_url = os.getenv("OLLAMA_TAGS_URL", "http://127.0.0.1:11434/api/tags")
 
     def generate(self, prompt: str):

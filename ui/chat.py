@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_URL = os.getenv("ASSISTANT_API_URL", "http://127.0.0.1:8000/assistant")
-REQUEST_TIMEOUT_SECONDS = int(os.getenv("ASSISTANT_REQUEST_TIMEOUT_SECONDS", "60"))
+REQUEST_TIMEOUT_SECONDS = int(os.getenv("ASSISTANT_REQUEST_TIMEOUT_SECONDS", "180"))
 
 
 st.set_page_config(page_title="AI Assistant", layout="wide")
