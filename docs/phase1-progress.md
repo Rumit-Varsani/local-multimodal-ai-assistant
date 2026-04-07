@@ -26,8 +26,10 @@ Phase 1 is considered successful when the project can:
 - critic scoring for dataset filtering
 - multi-model Ollama querying and fallback candidates
 - SQLite-backed training topic and model-decision tracking
+- resource snapshots and model-status visibility
 - training plan scaffolding
 - training run records with executable command templates
+- automatic training-execution jobs with safe execution gating
 - checkpoint registry
 - benchmark gating
 
@@ -47,6 +49,7 @@ Phase 1 is considered successful when the project can:
 - `POST /autonomy/jobs/autonomy-cycle`
 - `GET /autonomy/jobs`
 - `GET /autonomy/checkpoints`
+- `GET /models/status`
 - `GET /training/topics`
 
 ## What Phase 1 does not do yet
@@ -62,6 +65,7 @@ It currently provides:
 - training-run preparation
 - promotion bookkeeping
 - topic-training command queuing
+- runtime-visible model routing and training-run history
 
 It does **not yet** provide:
 
@@ -71,6 +75,7 @@ It does **not yet** provide:
 - held-out benchmark suites
 - rollback-aware deployment automation
 - smarter resource-aware routing feedback from real benchmark history
+- full safe deployment/promotion of newly trained weights
 
 ## Why this is still the right Phase 1
 

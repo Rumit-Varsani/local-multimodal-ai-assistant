@@ -110,6 +110,52 @@ class SQLiteMemoryService:
             "model_decisions": decisions,
         }
 
+    def latest_model_decisions(self, limit: int = 20):
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT timestamp, task_type, selected_model, candidates_json, status
+                FROM model_decisions
+                ORDER BY id DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return [
+            {
+                "timestamp": row[0],
+                "task_type": row[1],
+                "selected_model": row[2],
+                "candidates": json.loads(row[3]),
+                "status": row[4],
+            }
+            for row in rows
+        ]
+
+    def latest_topic_knowledge(self, limit: int = 20):
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT created_at, topic_id, topic, subtopic, model, answer, score
+                FROM topic_knowledge
+                ORDER BY id DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+        return [
+            {
+                "created_at": row[0],
+                "topic_id": row[1],
+                "topic": row[2],
+                "subtopic": row[3],
+                "model": row[4],
+                "answer": row[5],
+                "score": row[6],
+            }
+            for row in rows
+        ]
+
     def _connect(self):
         return sqlite3.connect(self.db_path)
 

@@ -53,6 +53,7 @@ class TrainingService:
 
         run = {
             "created_at": self._now(),
+            "updated_at": self._now(),
             "dataset_id": dataset.get("dataset_id", ""),
             "strategy": strategy,
             "status": "ready" if strategy != "hold" else "waiting",

@@ -8,10 +8,12 @@ from backend.services.model_manager_service import ModelManagerService
 from backend.services.model_registry_service import ModelRegistryService
 from backend.services.multi_model_ollama_service import MultiModelOllamaService
 from backend.services.router_service import RouterService
+from backend.services.resource_monitor_service import ResourceMonitorService
 from backend.services.sqlite_memory_service import SQLiteMemoryService
 from backend.services.task_queue_service import TaskQueueService
 from backend.services.teacher_service import TeacherService
 from backend.services.topic_training_service import TopicTrainingService
+from backend.services.training_execution_service import TrainingExecutionService
 from backend.services.training_service import TrainingService
 
 task_queue = TaskQueueService()
@@ -19,6 +21,7 @@ multi_model_service = MultiModelOllamaService()
 model_manager = ModelManagerService(multi_model_service=multi_model_service)
 router_service = RouterService()
 sqlite_memory = SQLiteMemoryService()
+resource_monitor = ResourceMonitorService()
 teacher_service = TeacherService()
 critic_service = CriticService()
 dataset_builder = DatasetBuilderService(
@@ -27,6 +30,7 @@ dataset_builder = DatasetBuilderService(
 )
 model_registry = ModelRegistryService()
 training_service = TrainingService()
+training_execution_service = TrainingExecutionService()
 benchmark_service = BenchmarkService()
 checkpoint_registry = CheckpointRegistryService()
 interaction_log = InteractionLogService()
@@ -46,4 +50,5 @@ autonomy_agent = AutonomyAgent(
     interaction_log=interaction_log,
     topic_training_service=topic_training_service,
     sqlite_memory=sqlite_memory,
+    training_execution_service=training_execution_service,
 )

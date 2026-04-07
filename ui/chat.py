@@ -26,6 +26,7 @@ AUTONOMY_JOBS_URL = f"{BACKEND_BASE_URL}/autonomy/jobs"
 AUTONOMY_CHECKPOINTS_URL = f"{BACKEND_BASE_URL}/autonomy/checkpoints"
 AUTONOMY_RUN_ONCE_URL = f"{BACKEND_BASE_URL}/autonomy/run-once"
 TRAINING_TOPICS_URL = f"{BACKEND_BASE_URL}/training/topics"
+MODELS_STATUS_URL = f"{BACKEND_BASE_URL}/models/status"
 
 
 def _fetch_json(url: str):
@@ -180,6 +181,54 @@ def _render_training_panel():
             f"Completed subtopics: {', '.join(topic.get('completed_subtopics', [])) or 'none yet'}"
         )
 
+    knowledge = payload.get("knowledge", [])[:5]
+    if knowledge:
+        st.markdown("**Latest learned knowledge**")
+        for item in knowledge:
+            st.caption(
+                f"{item.get('topic')} -> {item.get('subtopic')} | model=`{item.get('model')}` | score=`{item.get('score')}`"
+            )
+
+    runs = payload.get("runs", [])[:5]
+    if runs:
+        st.markdown("**Training runs**")
+        for run in runs:
+            st.markdown(
+                f"- `{run.get('dataset_id', 'unknown')}` | status=`{run.get('status', 'unknown')}` | strategy=`{run.get('strategy', 'unknown')}`"
+            )
+
+
+def _render_model_panel():
+    payload, error = _fetch_json(MODELS_STATUS_URL)
+
+    st.subheader("Model Routing")
+    if error:
+        st.error(error)
+        return
+
+    resources = payload.get("resources", {})
+    memory = resources.get("memory", {})
+    disk = resources.get("disk", {})
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Available Models", len(payload.get("available_models", [])))
+    with col2:
+        st.metric("Free Disk (GB)", disk.get("free_gb", "n/a"))
+    with col3:
+        st.metric("Memory Available (MB)", memory.get("available_mb", "n/a"))
+
+    st.markdown("**Routing profiles**")
+    st.json(payload.get("routing_profiles", {}))
+
+    decisions = payload.get("recent_decisions", [])
+    if decisions:
+        st.markdown("**Recent model decisions**")
+        for item in decisions[:5]:
+            st.caption(
+                f"{item.get('task_type')} -> selected `{item.get('selected_model')}` from {', '.join(item.get('candidates', []))}"
+            )
+
 
 st.set_page_config(page_title="ForgeMind", layout="wide")
 
@@ -222,6 +271,8 @@ if st.session_state.auto_refresh:
 _render_autonomy_panel()
 st.divider()
 _render_training_panel()
+st.divider()
+_render_model_panel()
 
 st.divider()
 st.subheader("Chat")

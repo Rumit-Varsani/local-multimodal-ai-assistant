@@ -17,6 +17,7 @@ class AutonomyAgent:
         interaction_log,
         topic_training_service=None,
         sqlite_memory=None,
+        training_execution_service=None,
     ):
         self.task_queue = task_queue
         self.dataset_builder = dataset_builder
@@ -27,6 +28,7 @@ class AutonomyAgent:
         self.interaction_log = interaction_log
         self.topic_training_service = topic_training_service
         self.sqlite_memory = sqlite_memory
+        self.training_execution_service = training_execution_service
         self.poll_seconds = 30
         self.auto_start = False
         self._thread = None
@@ -123,6 +125,9 @@ class AutonomyAgent:
     def _process_non_cycle_job(self, job: dict):
         if job["type"] == "topic_training" and self.topic_training_service is not None:
             return self.topic_training_service.process_topic_job(job)
+        if job["type"] == "training_execution" and self.training_execution_service is not None:
+            dataset_id = job.get("payload", {}).get("dataset_id", "")
+            return self.training_execution_service.execute(dataset_id=dataset_id)
         return {"message": f"Unsupported job type: {job['type']}"}
 
     def _run_cycle(self):
@@ -131,6 +136,13 @@ class AutonomyAgent:
         student = self.model_registry.get_student()
         training_plan = self.training_service.plan_training(dataset=dataset, student_model=student)
         training_run = self.training_service.create_training_run(dataset=dataset, training_plan=training_plan)
+        if training_run["status"] == "ready":
+            self.task_queue.enqueue(
+                "training_execution",
+                payload={"dataset_id": dataset.get("dataset_id", "")},
+                source="autonomy_training_cycle",
+                priority=2,
+            )
 
         if not dataset_benchmark["ready_for_training"]:
             return {
