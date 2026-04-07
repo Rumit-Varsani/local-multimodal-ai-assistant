@@ -77,6 +77,23 @@ class TaskQueueService:
             "failed": sum(1 for job in jobs if job["status"] == "failed"),
         }
 
+    def history(self, limit: int = 20):
+        if not self.history_path.exists():
+            return []
+
+        items = []
+        with self.history_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    items.append(json.loads(line))
+                except json.JSONDecodeError:
+                    continue
+
+        return items[-limit:]
+
     def has_pending_job_type(self, job_type: str):
         jobs = self._load_queue()["jobs"]
         return any(job["type"] == job_type and job["status"] in {"pending", "running"} for job in jobs)

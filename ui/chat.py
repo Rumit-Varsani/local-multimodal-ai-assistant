@@ -55,6 +55,19 @@ def _post_json(url: str):
         return None, "The backend returned invalid JSON."
 
 
+def _post_json_body(url: str, payload: dict):
+    try:
+        response = requests.post(url, json=payload, timeout=REQUEST_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        return response.json(), None
+    except requests.Timeout:
+        return None, "Timed out while waiting for the Dell backend."
+    except requests.RequestException as exc:
+        return None, f"Request error: {exc}"
+    except ValueError:
+        return None, "The backend returned invalid JSON."
+
+
 def _summarize_jobs(payload: dict):
     jobs = payload.get("jobs", [])[:5]
     if not jobs:
@@ -64,6 +77,19 @@ def _summarize_jobs(payload: dict):
     for job in jobs:
         lines.append(
             f"- `{job.get('type', 'unknown')}` | `{job.get('status', 'unknown')}` | source=`{job.get('source', 'unknown')}`"
+        )
+    return "\n".join(lines)
+
+
+def _summarize_history(payload: dict):
+    items = payload.get("history", [])[-5:]
+    if not items:
+        return "No completed job history yet."
+
+    lines = []
+    for item in items:
+        lines.append(
+            f"- `{item.get('type', 'unknown')}` finished as `{item.get('status', 'unknown')}` at `{item.get('updated_at', '')}`"
         )
     return "\n".join(lines)
 
@@ -139,6 +165,8 @@ def _render_autonomy_panel():
             st.error(jobs_error)
         elif jobs_payload:
             st.markdown(_summarize_jobs(jobs_payload))
+            st.markdown("**Recent history**")
+            st.markdown(_summarize_history(jobs_payload))
 
     with right:
         st.markdown("**Checkpoint activity**")
@@ -196,6 +224,8 @@ def _render_training_panel():
             st.markdown(
                 f"- `{run.get('dataset_id', 'unknown')}` | status=`{run.get('status', 'unknown')}` | strategy=`{run.get('strategy', 'unknown')}`"
             )
+            if run.get("command"):
+                st.caption(run.get("command"))
 
 
 def _render_model_panel():
@@ -255,6 +285,18 @@ with st.sidebar:
         else:
             st.success("Autonomy cycle triggered.")
             st.json(payload)
+
+    training_topic = st.text_input("Training topic", placeholder="Python, FastAPI, SQL...")
+    if st.button("Train this topic", use_container_width=True):
+        if not training_topic.strip():
+            st.error("Enter a topic first.")
+        else:
+            payload, error = _post_json_body(TRAINING_TOPICS_URL, {"topic": training_topic.strip()})
+            if error:
+                st.error(error)
+            else:
+                st.success(f"Queued training for {payload.get('topic', training_topic.strip())}.")
+                st.json(payload)
 
 if st.session_state.auto_refresh:
     components.html(

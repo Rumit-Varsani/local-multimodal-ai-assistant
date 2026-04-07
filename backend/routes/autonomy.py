@@ -41,6 +41,7 @@ def list_jobs():
     return {
         "stats": task_queue.stats(),
         "jobs": task_queue.list_jobs(),
+        "history": task_queue.history(),
     }
 
 
