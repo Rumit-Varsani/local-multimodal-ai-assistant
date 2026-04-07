@@ -1,6 +1,7 @@
 class BenchmarkService:
     def evaluate_dataset(self, dataset: dict):
         sample_count = dataset.get("filtered_samples", 0)
+        teacher_samples = dataset.get("teacher_samples", 0)
         quality = 0.2
         notes = []
 
@@ -13,11 +14,15 @@ class BenchmarkService:
         if sample_count >= 75:
             quality = 0.85
             notes.append("Dataset is large enough for a meaningful autonomous checkpoint iteration.")
+        if teacher_samples > 0:
+            quality += 0.05
+            notes.append("Teacher-synthesized samples improved dataset coverage.")
 
         return {
             "kind": "dataset",
-            "score": round(quality, 2),
+            "score": round(min(quality, 0.95), 2),
             "sample_count": sample_count,
+            "teacher_samples": teacher_samples,
             "ready_for_training": sample_count >= 10,
             "notes": notes,
         }

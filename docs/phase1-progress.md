@@ -22,7 +22,10 @@ Phase 1 is considered successful when the project can:
 - file-backed job queue
 - dataset builder from interaction logs
 - model registry for student and teacher roles
+- teacher synthesis for dataset enrichment
+- critic scoring for dataset filtering
 - training plan scaffolding
+- training run records with executable command templates
 - checkpoint registry
 - benchmark gating
 
@@ -31,6 +34,7 @@ Phase 1 is considered successful when the project can:
 - background autonomy worker
 - automatic idle autonomy-cycle enqueueing
 - startup and shutdown integration with FastAPI
+- environment-controlled teacher synthesis and training command generation
 
 ### API routes
 
@@ -50,14 +54,16 @@ It currently provides:
 
 - autonomous orchestration
 - artifact generation
+- teacher-enriched dataset preparation
 - checkpoint planning
+- training-run preparation
 - promotion bookkeeping
 
 It does **not yet** provide:
 
 - real LoRA execution
 - GPU-aware trainer execution
-- dataset quality critics from multiple teacher models
+- multi-model teacher orchestration across distinct open models
 - held-out benchmark suites
 - rollback-aware deployment automation
 

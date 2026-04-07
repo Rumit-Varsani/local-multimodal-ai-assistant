@@ -121,6 +121,7 @@ class AutonomyAgent:
         dataset_benchmark = self.benchmark_service.evaluate_dataset(dataset)
         student = self.model_registry.get_student()
         training_plan = self.training_service.plan_training(dataset=dataset, student_model=student)
+        training_run = self.training_service.create_training_run(dataset=dataset, training_plan=training_plan)
 
         if not dataset_benchmark["ready_for_training"]:
             return {
@@ -128,6 +129,7 @@ class AutonomyAgent:
                 "dataset": dataset,
                 "dataset_benchmark": dataset_benchmark,
                 "training_plan": training_plan,
+                "training_run": training_run,
             }
 
         checkpoint = self.checkpoint_registry.register_candidate(
@@ -141,6 +143,7 @@ class AutonomyAgent:
             "dataset": dataset,
             "dataset_benchmark": dataset_benchmark,
             "training_plan": training_plan,
+            "training_run": training_run,
             "checkpoint": checkpoint,
             "promoted_checkpoint": promoted,
         }
