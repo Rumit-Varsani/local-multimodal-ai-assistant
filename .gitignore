@@ -34,3 +34,6 @@ memory/chromadb/
 # Temporary
 *.log
 *.tmp
+
+# Local helper worktrees
+worktrees/
