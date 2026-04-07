@@ -20,14 +20,31 @@ class SQLiteMemoryService:
                 (self._now(), user_message, assistant_response, status, model),
             )
 
-    def record_model_decision(self, *, task_type: str, selected_model: str, candidates: list[str], status: str):
+    def record_model_decision(
+        self,
+        *,
+        task_type: str,
+        selected_model: str,
+        candidates: list[str],
+        status: str,
+        judge_method: str = "",
+        judge_score: float | None = None,
+    ):
         with self._connect() as conn:
             conn.execute(
                 """
-                INSERT INTO model_decisions (timestamp, task_type, selected_model, candidates_json, status)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO model_decisions (timestamp, task_type, selected_model, candidates_json, status, judge_method, judge_score)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (self._now(), task_type, selected_model, json.dumps(candidates), status),
+                (
+                    self._now(),
+                    task_type,
+                    selected_model,
+                    json.dumps(candidates),
+                    status,
+                    judge_method,
+                    judge_score,
+                ),
             )
 
     def create_training_topic(self, *, topic: str, subtopics: list[str]):
@@ -114,7 +131,7 @@ class SQLiteMemoryService:
         with self._connect() as conn:
             rows = conn.execute(
                 """
-                SELECT timestamp, task_type, selected_model, candidates_json, status
+                SELECT timestamp, task_type, selected_model, candidates_json, status, judge_method, judge_score
                 FROM model_decisions
                 ORDER BY id DESC
                 LIMIT ?
@@ -128,6 +145,8 @@ class SQLiteMemoryService:
                 "selected_model": row[2],
                 "candidates": json.loads(row[3]),
                 "status": row[4],
+                "judge_method": row[5],
+                "judge_score": row[6],
             }
             for row in rows
         ]
@@ -181,10 +200,18 @@ class SQLiteMemoryService:
                     task_type TEXT NOT NULL,
                     selected_model TEXT NOT NULL,
                     candidates_json TEXT NOT NULL,
-                    status TEXT NOT NULL
+                    status TEXT NOT NULL,
+                    judge_method TEXT NOT NULL DEFAULT '',
+                    judge_score REAL
                 )
                 """
             )
+
+            columns = [row[1] for row in conn.execute("PRAGMA table_info(model_decisions)").fetchall()]
+            if "judge_method" not in columns:
+                conn.execute("ALTER TABLE model_decisions ADD COLUMN judge_method TEXT NOT NULL DEFAULT ''")
+            if "judge_score" not in columns:
+                conn.execute("ALTER TABLE model_decisions ADD COLUMN judge_score REAL")
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS training_topics (

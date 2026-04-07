@@ -4,6 +4,7 @@ from backend.services.checkpoint_registry_service import CheckpointRegistryServi
 from backend.services.critic_service import CriticService
 from backend.services.dataset_builder_service import DatasetBuilderService
 from backend.services.interaction_log_service import InteractionLogService
+from backend.services.judge_service import JudgeService
 from backend.services.model_manager_service import ModelManagerService
 from backend.services.model_registry_service import ModelRegistryService
 from backend.services.multi_model_ollama_service import MultiModelOllamaService
@@ -26,6 +27,7 @@ resource_monitor = ResourceMonitorService()
 project_phase_service = ProjectPhaseService()
 teacher_service = TeacherService()
 critic_service = CriticService()
+judge_service = JudgeService()
 dataset_builder = DatasetBuilderService(
     teacher_service=teacher_service,
     critic_service=critic_service,
@@ -40,6 +42,7 @@ topic_training_service = TopicTrainingService(
     model_manager=model_manager,
     multi_model_service=multi_model_service,
     sqlite_memory=sqlite_memory,
+    judge_service=judge_service,
 )
 
 autonomy_agent = AutonomyAgent(

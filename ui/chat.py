@@ -257,7 +257,8 @@ def _render_model_panel():
         st.markdown("**Recent model decisions**")
         for item in decisions[:5]:
             st.caption(
-                f"{item.get('task_type')} -> selected `{item.get('selected_model')}` from {', '.join(item.get('candidates', []))}"
+                f"{item.get('task_type')} -> selected `{item.get('selected_model')}` from {', '.join(item.get('candidates', []))} "
+                f"| judge=`{item.get('judge_method') or 'n/a'}` score=`{item.get('judge_score')}`"
             )
 
 

@@ -2,10 +2,11 @@ from backend.services.evaluation_service import EvaluationService
 
 
 class TopicTrainingService:
-    def __init__(self, *, model_manager, multi_model_service, sqlite_memory):
+    def __init__(self, *, model_manager, multi_model_service, sqlite_memory, judge_service):
         self.model_manager = model_manager
         self.multi_model_service = multi_model_service
         self.sqlite_memory = sqlite_memory
+        self.judge_service = judge_service
         self.evaluator = EvaluationService()
 
     def enqueue_topic(self, *, message: str, task_queue):
@@ -56,6 +57,8 @@ class TopicTrainingService:
                 selected_model=best["model"],
                 candidates=candidates[:3],
                 status="ok",
+                judge_method=best.get("judge_method", ""),
+                judge_score=best.get("judge_score"),
             )
             results.append(best)
             self.sqlite_memory.update_training_topic(
@@ -103,30 +106,20 @@ Return a practical answer that can be stored as internal learning material.
 """
 
     def _choose_best(self, prompt: str, comparisons: list[dict]):
-        ranked = []
-        for item in comparisons:
-            if item.get("error"):
-                continue
-            response = item.get("response", "").strip()
-            if not response:
-                continue
-            evaluation = self.evaluator.evaluate(
-                user_message=prompt,
-                assistant_response=response,
-                status="ok",
-                plan={"intent": "training", "strategy": "multi_model_compare", "response_style": "default"},
-            )
-            ranked.append(
-                {
-                    "model": item["model"],
-                    "response": response,
-                    "score": evaluation["overall"],
-                    "evaluation": evaluation,
-                }
-            )
-
+        ranked = self.judge_service.rank_candidates(
+            prompt=prompt,
+            candidates=comparisons,
+            task_type="training",
+        )
         if not ranked:
             return None
 
-        ranked.sort(key=lambda item: item["score"], reverse=True)
-        return ranked[0]
+        best = ranked[0]
+        return {
+            "model": best["model"],
+            "response": best["response"],
+            "score": best["judge_score"],
+            "evaluation": best.get("evaluation", {}),
+            "judge_method": best.get("judge_method", ""),
+            "judge_notes": best.get("judge_notes", []),
+        }
