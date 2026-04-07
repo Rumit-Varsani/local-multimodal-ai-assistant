@@ -29,4 +29,5 @@ See [remote-dev-setup.md](/Users/rumitvarsani/ai-project/docs/remote-dev-setup.m
 - The automated Mac-to-GitHub and Dell runtime workflow lives in [automated-workflow.md](/Users/rumitvarsani/ai-project/docs/automated-workflow.md).
 - The simplest human-readable version lives in [simple-mac-dell-workflow.md](/Users/rumitvarsani/ai-project/docs/simple-mac-dell-workflow.md).
 - Local git safety guards for Mac and Dell live in [git-guards.md](/Users/rumitvarsani/ai-project/docs/git-guards.md).
+- Windows-specific Dell runtime notes live in [windows-dell-runtime.md](/Users/rumitvarsani/ai-project/docs/windows-dell-runtime.md).
 - This project is currently text-first. Older multimodal/startup artifacts have been removed or replaced as part of the cleanup.

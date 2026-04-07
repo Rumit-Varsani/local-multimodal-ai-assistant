@@ -42,6 +42,12 @@ What it does:
 
 This is correct for a runtime-only machine.
 
+If Dell runs Windows/PowerShell, use:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\dell_sync_main.ps1
+```
+
 ### On either machine
 
 Use [runtime_status.sh](/Users/rumitvarsani/ai-project/scripts/runtime_status.sh):
@@ -89,6 +95,8 @@ That worktree is a detached checkout of `origin/main`, useful for:
 
 1. run `./scripts/dell_sync_main.sh`
 2. run `./scripts/run_server_dell.sh`
+
+If Dell runs Windows, use the PowerShell versions documented in [windows-dell-runtime.md](/Users/rumitvarsani/ai-project/docs/windows-dell-runtime.md).
 
 ## Important rule
 
