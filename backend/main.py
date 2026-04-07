@@ -25,6 +25,7 @@ app.include_router(chat.router, prefix="/chat")  # temporary fallback
 
 @app.on_event("startup")
 def startup():
+    autonomy_agent.refresh_config_from_env()
     if autonomy_agent.auto_start:
         autonomy_agent.start()
 

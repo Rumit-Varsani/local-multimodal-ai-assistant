@@ -23,8 +23,8 @@ class AutonomyAgent:
         self.benchmark_service = benchmark_service
         self.checkpoint_registry = checkpoint_registry
         self.interaction_log = interaction_log
-        self.poll_seconds = int(os.getenv("AUTONOMY_POLL_SECONDS", "30"))
-        self.auto_start = os.getenv("AUTONOMY_AUTO_START", "false").lower() == "true"
+        self.poll_seconds = 30
+        self.auto_start = False
         self._thread = None
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
@@ -34,8 +34,14 @@ class AutonomyAgent:
             "last_result": {},
             "last_error": "",
         }
+        self.refresh_config_from_env()
+
+    def refresh_config_from_env(self):
+        self.poll_seconds = int(os.getenv("AUTONOMY_POLL_SECONDS", "30"))
+        self.auto_start = os.getenv("AUTONOMY_AUTO_START", "false").lower() == "true"
 
     def start(self):
+        self.refresh_config_from_env()
         with self._lock:
             if self._thread and self._thread.is_alive():
                 return self.status()
@@ -48,13 +54,19 @@ class AutonomyAgent:
 
     def stop(self):
         self._stop_event.set()
+        thread = self._thread
+        if thread and thread.is_alive():
+            thread.join(timeout=min(self.poll_seconds, 5))
         with self._lock:
             self._state["running"] = False
         return self.status()
 
     def status(self):
+        running = bool(self._thread and self._thread.is_alive())
+        self._state["running"] = running
         return {
             **self._state,
+            "auto_start": self.auto_start,
             "poll_seconds": self.poll_seconds,
             "queue": self.task_queue.stats(),
             "checkpoints": len(self.checkpoint_registry.list_checkpoints()),
