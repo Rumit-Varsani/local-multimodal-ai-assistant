@@ -17,6 +17,10 @@ storage/chroma/
 storage/brain_state.json
 storage/interactions.jsonl
 storage/lessons.jsonl
+storage/datasets/
+storage/checkpoints/
+storage/jobs/
+storage/models/
 ComfyUI/output/
 
 # Logs

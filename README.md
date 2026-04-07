@@ -13,6 +13,7 @@ User -> Streamlit UI -> FastAPI -> Chat Agent -> Memory + Ollama
 - ChromaDB-backed memory
 - file-backed brain state, evaluations, and interaction logs
 - local Ollama model integration
+- Phase 1 autonomy worker, queue, dataset builder, and checkpoint scaffolding
 
 ## Recommended Runtime Split
 
@@ -24,6 +25,7 @@ See [remote-dev-setup.md](/Users/rumitvarsani/ai-project/docs/remote-dev-setup.m
 ## Notes
 
 - The long-term autonomous training roadmap lives in [autonomous-training-roadmap.md](/Users/rumitvarsani/ai-project/docs/autonomous-training-roadmap.md).
+- Current implementation progress lives in [phase1-progress.md](/Users/rumitvarsani/ai-project/docs/phase1-progress.md).
 - The automated Mac-to-GitHub and Dell runtime workflow lives in [automated-workflow.md](/Users/rumitvarsani/ai-project/docs/automated-workflow.md).
 - The simplest human-readable version lives in [simple-mac-dell-workflow.md](/Users/rumitvarsani/ai-project/docs/simple-mac-dell-workflow.md).
 - Local git safety guards for Mac and Dell live in [git-guards.md](/Users/rumitvarsani/ai-project/docs/git-guards.md).
