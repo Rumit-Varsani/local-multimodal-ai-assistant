@@ -18,7 +18,7 @@ User -> Streamlit UI -> FastAPI -> Chat Agent -> Memory + Ollama
 ## Recommended Runtime Split
 
 - Dell laptop: Ollama, FastAPI, storage, future training jobs, future autonomy loop
-- MacBook: coding, git, browser testing, optional Streamlit UI via SSH tunnel
+- MacBook: coding, git, browser testing, optional Streamlit UI via SSH tunnel that visualizes Dell autonomy state live
 
 See [remote-dev-setup.md](/Users/rumitvarsani/ai-project/docs/remote-dev-setup.md) for the recommended workflow.
 
