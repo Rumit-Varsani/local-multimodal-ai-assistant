@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [[ "${FORGEMIND_ALLOW_DELL_COMMIT:-}" == "1" ]]; then
+  exit 0
+fi
+
+echo "Dell runtime guard: commits are blocked on this machine."
+echo "This repo should only sync from GitHub and run the server."
+echo "If you really need a one-time Dell commit, rerun with FORGEMIND_ALLOW_DELL_COMMIT=1."
+exit 1

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euo pipefail
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [[ "$branch" != "main" && "$branch" != feature/* ]]; then
+  echo "Mac dev guard: push from 'main' or 'feature/*' only."
+  echo "Current branch: $branch"
+  exit 1
+fi
+
+exit 0

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -euo pipefail
+
+if [[ "${FORGEMIND_ALLOW_DELL_PUSH:-}" == "1" ]]; then
+  exit 0
+fi
+
+echo "Dell runtime guard: pushes are blocked on this machine."
+echo "Use the Mac as the coding machine and GitHub as the source of truth."
+echo "If you really need a one-time Dell push, rerun with FORGEMIND_ALLOW_DELL_PUSH=1."
+exit 1
