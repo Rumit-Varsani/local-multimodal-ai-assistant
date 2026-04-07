@@ -1,7 +1,7 @@
 # backend/main.py
 
 from fastapi import FastAPI
-from backend.routes import assistant, autonomy, chat
+from backend.routes import assistant, autonomy, chat, training
 from backend.runtime import autonomy_agent
 
 app = FastAPI()
@@ -21,6 +21,7 @@ def home():
 app.include_router(assistant.router, prefix="/assistant")
 app.include_router(autonomy.router, prefix="/autonomy")
 app.include_router(chat.router, prefix="/chat")  # temporary fallback
+app.include_router(training.router, prefix="/training")
 
 
 @app.on_event("startup")

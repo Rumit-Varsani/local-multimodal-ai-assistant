@@ -21,6 +21,7 @@ storage/datasets/
 storage/checkpoints/
 storage/jobs/
 storage/models/
+storage/sqlite/
 ComfyUI/output/
 
 # Logs

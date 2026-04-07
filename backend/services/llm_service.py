@@ -19,12 +19,13 @@ class LLMService:
         self.timeout_seconds = int(os.getenv("OLLAMA_TIMEOUT_SECONDS", "180"))
         self.tags_url = os.getenv("OLLAMA_TAGS_URL", "http://127.0.0.1:11434/api/tags")
 
-    def generate(self, prompt: str):
+    def generate(self, prompt: str, *, model: str | None = None):
+        selected_model = model or self.model
         try:
             response = requests.post(
                 self.url,
                 json={
-                    "model": self.model,
+                    "model": selected_model,
                     "prompt": prompt,
                     "stream": False
                 },
@@ -47,6 +48,9 @@ class LLMService:
             raise LLMServiceError("Ollama returned an empty response.")
 
         return content
+
+    def list_models(self):
+        return self._fetch_available_models()
 
     def _build_http_error_message(self, response):
         if response is None:

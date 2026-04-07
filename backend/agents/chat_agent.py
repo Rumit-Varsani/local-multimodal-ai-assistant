@@ -5,6 +5,7 @@ from backend.services.llm_service import LLMService, LLMServiceError
 from backend.services.message_parser_service import MessageParserService
 from backend.services.planner_service import PlannerService
 from backend.services.reflection_service import ReflectionService
+from backend.runtime import model_manager, multi_model_service, sqlite_memory
 from backend.agents.memory_agent import MemoryAgent
 
 
@@ -196,13 +197,17 @@ Assistant:
         # 3. LLM CALL
         # -----------------------------
         try:
-            response = self.llm.generate(full_prompt)
+            candidates = model_manager.choose_candidates(plan["intent"] if plan["intent"] in {"code_generation"} else "general_chat")
+            model_result = multi_model_service.generate(prompt=full_prompt, models=candidates[:3])
+            response = model_result["response"]
+            selected_model = model_result["model"]
             status = "ok"
             self.brain_state.increment_metric("successful_replies")
         except LLMServiceError as e:
             print("❌ LLM error:", e)
             response = str(e)
             status = "llm_error"
+            selected_model = ""
             self.brain_state.increment_metric("llm_errors")
 
         # -----------------------------
@@ -258,6 +263,12 @@ Assistant:
             evaluation=evaluation,
         )
         self.brain_state.record_evaluation(evaluation)
+        sqlite_memory.log_interaction(
+            user_message=message,
+            assistant_response=response.strip(),
+            status=status,
+            model=selected_model,
+        )
 
         return response.strip()
 

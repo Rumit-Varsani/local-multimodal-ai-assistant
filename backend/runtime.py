@@ -4,12 +4,21 @@ from backend.services.checkpoint_registry_service import CheckpointRegistryServi
 from backend.services.critic_service import CriticService
 from backend.services.dataset_builder_service import DatasetBuilderService
 from backend.services.interaction_log_service import InteractionLogService
+from backend.services.model_manager_service import ModelManagerService
 from backend.services.model_registry_service import ModelRegistryService
+from backend.services.multi_model_ollama_service import MultiModelOllamaService
+from backend.services.router_service import RouterService
+from backend.services.sqlite_memory_service import SQLiteMemoryService
 from backend.services.task_queue_service import TaskQueueService
 from backend.services.teacher_service import TeacherService
+from backend.services.topic_training_service import TopicTrainingService
 from backend.services.training_service import TrainingService
 
 task_queue = TaskQueueService()
+multi_model_service = MultiModelOllamaService()
+model_manager = ModelManagerService(multi_model_service=multi_model_service)
+router_service = RouterService()
+sqlite_memory = SQLiteMemoryService()
 teacher_service = TeacherService()
 critic_service = CriticService()
 dataset_builder = DatasetBuilderService(
@@ -21,6 +30,11 @@ training_service = TrainingService()
 benchmark_service = BenchmarkService()
 checkpoint_registry = CheckpointRegistryService()
 interaction_log = InteractionLogService()
+topic_training_service = TopicTrainingService(
+    model_manager=model_manager,
+    multi_model_service=multi_model_service,
+    sqlite_memory=sqlite_memory,
+)
 
 autonomy_agent = AutonomyAgent(
     task_queue=task_queue,
@@ -30,4 +44,6 @@ autonomy_agent = AutonomyAgent(
     benchmark_service=benchmark_service,
     checkpoint_registry=checkpoint_registry,
     interaction_log=interaction_log,
+    topic_training_service=topic_training_service,
+    sqlite_memory=sqlite_memory,
 )

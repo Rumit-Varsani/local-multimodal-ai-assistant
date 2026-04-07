@@ -24,6 +24,8 @@ Phase 1 is considered successful when the project can:
 - model registry for student and teacher roles
 - teacher synthesis for dataset enrichment
 - critic scoring for dataset filtering
+- multi-model Ollama querying and fallback candidates
+- SQLite-backed training topic and model-decision tracking
 - training plan scaffolding
 - training run records with executable command templates
 - checkpoint registry
@@ -45,6 +47,7 @@ Phase 1 is considered successful when the project can:
 - `POST /autonomy/jobs/autonomy-cycle`
 - `GET /autonomy/jobs`
 - `GET /autonomy/checkpoints`
+- `GET /training/topics`
 
 ## What Phase 1 does not do yet
 
@@ -58,6 +61,7 @@ It currently provides:
 - checkpoint planning
 - training-run preparation
 - promotion bookkeeping
+- topic-training command queuing
 
 It does **not yet** provide:
 
@@ -66,6 +70,7 @@ It does **not yet** provide:
 - multi-model teacher orchestration across distinct open models
 - held-out benchmark suites
 - rollback-aware deployment automation
+- smarter resource-aware routing feedback from real benchmark history
 
 ## Why this is still the right Phase 1
 

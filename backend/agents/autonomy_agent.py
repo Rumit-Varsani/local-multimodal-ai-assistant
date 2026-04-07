@@ -15,6 +15,8 @@ class AutonomyAgent:
         benchmark_service,
         checkpoint_registry,
         interaction_log,
+        topic_training_service=None,
+        sqlite_memory=None,
     ):
         self.task_queue = task_queue
         self.dataset_builder = dataset_builder
@@ -23,6 +25,8 @@ class AutonomyAgent:
         self.benchmark_service = benchmark_service
         self.checkpoint_registry = checkpoint_registry
         self.interaction_log = interaction_log
+        self.topic_training_service = topic_training_service
+        self.sqlite_memory = sqlite_memory
         self.poll_seconds = 30
         self.auto_start = False
         self._thread = None
@@ -101,7 +105,7 @@ class AutonomyAgent:
     def _process_job(self, job: dict):
         try:
             if job["type"] != "autonomy_cycle":
-                result = {"message": f"Unsupported job type: {job['type']}"}
+                result = self._process_non_cycle_job(job)
             else:
                 result = self._run_cycle()
             self.task_queue.complete(job["id"], result=result)
@@ -115,6 +119,11 @@ class AutonomyAgent:
             self._state["last_error"] = error
             self._state["last_cycle_at"] = self._now()
             return {"error": error}
+
+    def _process_non_cycle_job(self, job: dict):
+        if job["type"] == "topic_training" and self.topic_training_service is not None:
+            return self.topic_training_service.process_topic_job(job)
+        return {"message": f"Unsupported job type: {job['type']}"}
 
     def _run_cycle(self):
         dataset = self.dataset_builder.build_dataset()

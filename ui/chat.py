@@ -25,6 +25,7 @@ AUTONOMY_STATUS_URL = f"{BACKEND_BASE_URL}/autonomy/status"
 AUTONOMY_JOBS_URL = f"{BACKEND_BASE_URL}/autonomy/jobs"
 AUTONOMY_CHECKPOINTS_URL = f"{BACKEND_BASE_URL}/autonomy/checkpoints"
 AUTONOMY_RUN_ONCE_URL = f"{BACKEND_BASE_URL}/autonomy/run-once"
+TRAINING_TOPICS_URL = f"{BACKEND_BASE_URL}/training/topics"
 
 
 def _fetch_json(url: str):
@@ -146,6 +147,40 @@ def _render_autonomy_panel():
             st.markdown(_summarize_checkpoints(checkpoints_payload))
 
 
+def _render_training_panel():
+    payload, error = _fetch_json(TRAINING_TOPICS_URL)
+
+    st.subheader("Training Memory")
+    if error:
+        st.error(error)
+        return
+
+    summary = payload.get("summary", {})
+    topics = payload.get("topics", [])
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Topics", summary.get("topics", 0))
+    with col2:
+        st.metric("Knowledge", summary.get("knowledge_items", 0))
+    with col3:
+        st.metric("Model Decisions", summary.get("model_decisions", 0))
+
+    if not topics:
+        st.caption("No topic-training runs recorded yet.")
+        return
+
+    latest = topics[:5]
+    for topic in latest:
+        st.markdown(
+            f"**{topic.get('topic', 'unknown')}** | status=`{topic.get('status', 'unknown')}` | "
+            f"knowledge=`{topic.get('knowledge_count', 0)}`"
+        )
+        st.caption(
+            f"Completed subtopics: {', '.join(topic.get('completed_subtopics', [])) or 'none yet'}"
+        )
+
+
 st.set_page_config(page_title="ForgeMind", layout="wide")
 
 st.title("ForgeMind")
@@ -185,6 +220,8 @@ if st.session_state.auto_refresh:
     )
 
 _render_autonomy_panel()
+st.divider()
+_render_training_panel()
 
 st.divider()
 st.subheader("Chat")
